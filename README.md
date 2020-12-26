@@ -1,2 +1,2 @@
-## <under construction> personal portfolio
+## (under construction) personal portfolio
   
