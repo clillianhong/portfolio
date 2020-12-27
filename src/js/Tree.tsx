@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import * as THREE from "three";
 import { readConfigFile } from "typescript";
 import ThreeScene, { ThreeSceneState, ThreeSceneProps } from "./ThreeScene";
+import { LoadMesh } from "./Models";
 
 export interface TreeState extends ThreeSceneState {
   treeID: string;
@@ -45,19 +46,30 @@ export class Tree extends Component<TreeProps, TreeState> {
     return cube;
   }
 
+  handleAddTreeLoad(treeGroup: THREE.Group): THREE.Scene {
+    var scene = this.state.currentScene;
+
+    const light = new THREE.PointLight(0x00ff00, 5, 100);
+    light.position.set(50, 50, 50); // soft white light
+    scene.add(light);
+    scene.add(treeGroup);
+    return scene;
+  }
+
   componentDidMount() {
     if (this.mount! === undefined) return;
     this.mount.current!.appendChild(this.state.renderer.domElement);
 
-    var scene = this.state.currentScene;
-    var camera = this.state.camera;
-
-    //EXAMPLE CUBE CODE ---------------------
-    //add objects to scene
-    scene.add(this.GreenCube());
-    //EXAMPLE CUBE CODE ---------------------
-    this.start();
-    camera.position.z = 5;
+    var treeGroupPromise = LoadMesh("/models/lowpolytree.obj");
+    treeGroupPromise.then(this.handleAddTreeLoad.bind(this)).then((scene) => {
+      var camera = this.state.camera;
+      camera.position.z = 5;
+      this.setState({
+        currentScene: scene,
+        camera: camera,
+      });
+      this.start();
+    });
   }
 
   componentDidUpdate(prevProps: TreeProps) {
