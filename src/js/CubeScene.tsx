@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as THREE from "three";
 import { readConfigFile } from "typescript";
 
-export interface ThreeSceneState {
+export interface CubeThreeSceneState {
   renderer: THREE.WebGLRenderer;
   camera: THREE.PerspectiveCamera;
   currentScene: THREE.Scene;
@@ -10,20 +10,23 @@ export interface ThreeSceneState {
   height: number;
 }
 
-export interface ThreeSceneProps {
+export interface CubeThreeSceneProps {
   width: number;
   height: number;
 }
 
-export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
+export class CubeThreeScene extends Component<
+  CubeThreeSceneProps,
+  CubeThreeSceneState
+> {
   mount = React.createRef<HTMLDivElement>();
   frameId?: number = undefined;
 
   //EXAMPLE CUBE CODE ---------------------
-  //state variable
+  cube?: THREE.Mesh = undefined;
   //EXAMPLE CUBE CODE ---------------------
 
-  constructor(props: ThreeSceneProps) {
+  constructor(props: CubeThreeSceneProps) {
     super(props);
 
     var renderer = new THREE.WebGLRenderer();
@@ -42,9 +45,18 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
     };
 
     //EXAMPLE CUBE CODE ---------------------
-    // instantiate objects
+    this.cube = this.GreenCube();
     //EXAMPLE CUBE CODE ---------------------
   }
+
+  //EXAMPLE CUBE CODE ---------------------
+  GreenCube() {
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    var cube = new THREE.Mesh(geometry, material);
+    return cube;
+  }
+  //EXAMPLE CUBE CODE ---------------------
 
   componentDidMount() {
     if (this.mount! === undefined) return;
@@ -54,14 +66,14 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
     var camera = this.state.camera;
 
     //EXAMPLE CUBE CODE ---------------------
-    //add objects to scene
+    this.cube && scene.add(this.cube);
     //EXAMPLE CUBE CODE ---------------------
 
     camera.position.z = 5;
     this.start();
   }
 
-  componentDidUpdate(prevProps: ThreeSceneProps) {
+  componentDidUpdate(prevProps: CubeThreeSceneProps) {
     if (prevProps === this.props) return;
     // this.stop();
     var renderer = this.state.renderer;
@@ -102,7 +114,9 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
     var renderer = this.state.renderer;
 
     //EXAMPLE CUBE CODE ---------------------
-    //change object state
+    if (!this.cube) return;
+    this.cube.rotation.x += 0.01;
+    this.cube.rotation.y += 0.01;
     //EXAMPLE CUBE CODE ---------------------
 
     renderer.render(scene, camera);
@@ -111,8 +125,8 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
   };
 
   render() {
-    return <div className="ThreeScene" ref={this.mount}></div>;
+    return <div className="CubeThreeScene" ref={this.mount}></div>;
   }
 }
 
-export default ThreeScene;
+export default CubeThreeScene;

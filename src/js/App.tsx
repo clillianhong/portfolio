@@ -2,7 +2,7 @@ import "../css/App.css";
 import React, { Component, FunctionComponent } from "react";
 import * as THREE from "three";
 import { readConfigFile } from "typescript";
-import ThreeScene, { ThreeSceneProps } from "./ThreeScene";
+import Tree from "./Tree";
 
 type AppState = {
   appWidth: number;
@@ -30,7 +30,11 @@ export class App extends Component<{}, AppState> {
   render() {
     return (
       <div className="App">
-        <ThreeScene width={this.state.appWidth} height={this.state.appHeight} />
+        <Tree
+          width={this.state.appWidth}
+          height={this.state.appHeight}
+          treeID="firstTree"
+        />
       </div>
     );
   }

@@ -1,30 +1,24 @@
 import React, { Component } from "react";
 import * as THREE from "three";
 import { readConfigFile } from "typescript";
+import ThreeScene, { ThreeSceneState, ThreeSceneProps } from "./ThreeScene";
 
-export interface ThreeSceneState {
-  renderer: THREE.WebGLRenderer;
-  camera: THREE.PerspectiveCamera;
-  currentScene: THREE.Scene;
-  width: number;
-  height: number;
+export interface TreeState extends ThreeSceneState {
+  treeID: string;
 }
 
-export interface ThreeSceneProps {
-  width: number;
-  height: number;
+export interface TreeProps extends ThreeSceneProps {
+  treeID: string;
 }
 
-export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
+export class Tree extends Component<TreeProps, TreeState> {
   mount = React.createRef<HTMLDivElement>();
   frameId?: number = undefined;
+  threeScene?: ThreeScene = undefined;
 
-  //EXAMPLE CUBE CODE ---------------------
-  //state variable
-  //EXAMPLE CUBE CODE ---------------------
-
-  constructor(props: ThreeSceneProps) {
+  constructor(props: TreeProps) {
     super(props);
+    this.threeScene = new ThreeScene(props);
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(props.width, props.height);
@@ -39,11 +33,16 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
       currentScene: new THREE.Scene(),
       width: props.width,
       height: props.height,
+      //new tree props
+      treeID: props.treeID,
     };
+  }
 
-    //EXAMPLE CUBE CODE ---------------------
-    // instantiate objects
-    //EXAMPLE CUBE CODE ---------------------
+  GreenCube() {
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    var cube = new THREE.Mesh(geometry, material);
+    return cube;
   }
 
   componentDidMount() {
@@ -55,33 +54,18 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
 
     //EXAMPLE CUBE CODE ---------------------
     //add objects to scene
+    scene.add(this.GreenCube());
     //EXAMPLE CUBE CODE ---------------------
-
-    camera.position.z = 5;
     this.start();
+    camera.position.z = 5;
   }
 
-  componentDidUpdate(prevProps: ThreeSceneProps) {
-    if (prevProps === this.props) return;
-    // this.stop();
-    var renderer = this.state.renderer;
-    renderer.setSize(this.props.width, this.props.height);
-    var camera = this.state.camera;
-    camera.aspect = this.props.width / this.props.height;
-    camera.updateProjectionMatrix();
-
-    this.setState({
-      renderer: renderer,
-      camera: camera,
-      width: this.props.width,
-      height: this.props.height,
-    });
+  componentDidUpdate(prevProps: TreeProps) {
+    this.threeScene && this.threeScene.componentDidUpdate.call(this, prevProps);
   }
 
   componentWillUnmount() {
-    this.stop();
-    if (this.mount! === undefined) return;
-    this.mount.current!.removeChild(this.state.renderer.domElement);
+    this.threeScene && this.threeScene.componentWillUnmount.call(this);
   }
 
   start = () => {
@@ -111,8 +95,8 @@ export class ThreeScene extends Component<ThreeSceneProps, ThreeSceneState> {
   };
 
   render() {
-    return <div className="ThreeScene" ref={this.mount}></div>;
+    return <div className={this.state.treeID} ref={this.mount}></div>;
   }
 }
 
-export default ThreeScene;
+export default Tree;
