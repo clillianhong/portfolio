@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import * as THREE from "three";
-import { readConfigFile } from "typescript";
 
 export interface ThreeSceneState {
   renderer: THREE.WebGLRenderer;

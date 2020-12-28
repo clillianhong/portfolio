@@ -1,7 +1,6 @@
 import "../css/App.css";
 import React, { Component, FunctionComponent } from "react";
 import * as THREE from "three";
-import { readConfigFile } from "typescript";
 import Tree from "./Tree";
 
 type AppState = {

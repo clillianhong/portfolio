@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import * as THREE from "three";
-import { readConfigFile } from "typescript";
 import ThreeScene, { ThreeSceneState, ThreeSceneProps } from "./ThreeScene";
 import { LoadMesh } from "./Models";
 
@@ -16,11 +15,11 @@ export class Tree extends Component<TreeProps, TreeState> {
   mount = React.createRef<HTMLDivElement>();
   frameId?: number = undefined;
   threeScene?: ThreeScene = undefined;
+  tree?: THREE.Group = undefined;
 
   constructor(props: TreeProps) {
     super(props);
     this.threeScene = new ThreeScene(props);
-
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(props.width, props.height);
     this.state = {
@@ -39,6 +38,9 @@ export class Tree extends Component<TreeProps, TreeState> {
     };
   }
 
+  /**
+   * helper function - just generates a green cube mesh
+   */
   GreenCube() {
     var geometry = new THREE.BoxGeometry(1, 1, 1);
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -46,10 +48,36 @@ export class Tree extends Component<TreeProps, TreeState> {
     return cube;
   }
 
+  /**
+   * Adds treeGroup to the current scene after to handle mesh load event
+   * @param treeGroup
+   */
   handleAddTreeLoad(treeGroup: THREE.Group): THREE.Scene {
     var scene = this.state.currentScene;
+    this.tree = treeGroup;
+    //create trees
+    for (var x = -12; x < 12; x += 2) {
+      if (this.tree) {
+        var tree2 = this.tree.clone();
+        tree2.position.set(
+          tree2.position.x + x,
+          tree2.position.y,
+          tree2.position.z
+        );
+        scene.add(tree2);
+      }
+    }
+    return scene;
+  }
 
-    scene.add(treeGroup);
+  /**
+   * Adds all lights to scene
+   * @param scene
+   */
+  addLights(scene: THREE.Scene): THREE.Scene {
+    const light = new THREE.PointLight(0xffffff, 50, 100);
+    light.position.set(50, 50, 50); // soft white light
+    scene.add(light);
     return scene;
   }
 
@@ -61,18 +89,19 @@ export class Tree extends Component<TreeProps, TreeState> {
       "/models/lowpolytree.obj",
       "/models/lowpolytree.mtl"
     );
-    treeGroupPromise.then(this.handleAddTreeLoad.bind(this)).then((scene) => {
-      var camera = this.state.camera;
-      const light = new THREE.PointLight(0xffffff, 50, 100);
-      light.position.set(50, 50, 50); // soft white light
-      scene.add(light);
-      camera.position.z = 5;
-      this.setState({
-        currentScene: scene,
-        camera: camera,
+    treeGroupPromise
+      .then(this.handleAddTreeLoad.bind(this))
+      .then(this.addLights)
+      .then((scene) => {
+        //set up camera and save state
+        var camera = this.state.camera;
+        camera.position.z = 10;
+        this.setState({
+          currentScene: scene,
+          camera: camera,
+        });
+        this.start();
       });
-      this.start();
-    });
   }
 
   componentDidUpdate(prevProps: TreeProps) {
@@ -101,7 +130,7 @@ export class Tree extends Component<TreeProps, TreeState> {
     var renderer = this.state.renderer;
 
     //EXAMPLE CUBE CODE ---------------------
-    //change object state
+
     //EXAMPLE CUBE CODE ---------------------
 
     renderer.render(scene, camera);

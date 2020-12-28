@@ -1,9 +1,13 @@
-import React, { Component } from "react";
 import * as THREE from "three";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader";
-import ThreeScene from "./ThreeScene";
 
+/**
+ * Returns a THREE.Group promise with the loaded object textured with the given mesh.
+ *
+ * @param meshPath
+ * @param materialPath
+ */
 export async function LoadMesh(
   meshPath: string,
   materialPath: string
