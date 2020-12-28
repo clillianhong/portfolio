@@ -49,9 +49,6 @@ export class Tree extends Component<TreeProps, TreeState> {
   handleAddTreeLoad(treeGroup: THREE.Group): THREE.Scene {
     var scene = this.state.currentScene;
 
-    const light = new THREE.PointLight(0x00ff00, 5, 100);
-    light.position.set(50, 50, 50); // soft white light
-    scene.add(light);
     scene.add(treeGroup);
     return scene;
   }
@@ -60,9 +57,15 @@ export class Tree extends Component<TreeProps, TreeState> {
     if (this.mount! === undefined) return;
     this.mount.current!.appendChild(this.state.renderer.domElement);
 
-    var treeGroupPromise = LoadMesh("/models/lowpolytree.obj");
+    var treeGroupPromise = LoadMesh(
+      "/models/lowpolytree.obj",
+      "/models/lowpolytree.mtl"
+    );
     treeGroupPromise.then(this.handleAddTreeLoad.bind(this)).then((scene) => {
       var camera = this.state.camera;
+      const light = new THREE.PointLight(0xffffff, 50, 100);
+      light.position.set(50, 50, 50); // soft white light
+      scene.add(light);
       camera.position.z = 5;
       this.setState({
         currentScene: scene,
