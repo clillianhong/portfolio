@@ -79,6 +79,7 @@ export class Planet extends Component<PlanetProps, PlanetState> {
 
     camera.position.z = 2 * this.state.orbitOuterRadius;
     camera.position.y = 0.5 * this.state.orbitOuterRadius;
+
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     scene = this.addPlanet(scene);
@@ -119,14 +120,33 @@ export class Planet extends Component<PlanetProps, PlanetState> {
     var camera = this.state.camera;
     var renderer = this.state.renderer;
 
+    // camera.position.applyQuaternion(
+    //   this.quaternion.setFromAxisAngle(
+    //     this.axis,
+    //     Math.PI *
+    //       2 *
+    //       ((this.state.clock.getDelta() / this.state.orbitOuterRadius) * 1.5)
+    //   )
+    // );
+    var vector = new THREE.Vector3(); // create once and reuse it!
+    camera.getWorldDirection(vector);
     camera.position.applyQuaternion(
       this.quaternion.setFromAxisAngle(
         this.axis,
         Math.PI *
           2 *
-          ((this.state.clock.getDelta() / this.state.orbitOuterRadius) * 1.5)
+          (((this.state.clock.getDelta() * 2) / this.state.orbitOuterRadius) *
+            1.5)
       )
     );
+
+    camera.updateProjectionMatrix();
+
+    // camera.setRotationFromAxisAngle(
+    //   new Vector3(0, 0, -1),
+    //   (this.state.orbitTilt * Math.PI) / 180
+    // );
+
     camera.lookAt(new Vector3(0, 0, 0));
 
     this.frameId = window.requestAnimationFrame(this.animate);
@@ -182,6 +202,7 @@ export class Planet extends Component<PlanetProps, PlanetState> {
     const planetRings = new THREE.Mesh(ringGeo, ringMat);
     planetRings.geometry.computeFaceNormals();
     planetRings.geometry.center();
+    planetRings.rotateOnWorldAxis(new Vector3(0, 0, 1), 0.5);
     rings.add(planetRings);
     scene.add(rings);
     return scene;
@@ -195,11 +216,15 @@ export class Planet extends Component<PlanetProps, PlanetState> {
     var xOuterRad =
       this.state.orbitOuterRadius * Math.cos(this.state.orbitTilt * toRad);
 
+    // var xInnerRad = this.state.orbitInnerRadius * Math.cos(30 * toRad);
+    // var xOuterRad = this.state.orbitOuterRadius * Math.cos(30 * toRad);
+
     let twopi = 2 * Math.PI,
-      iVer = Math.max(2, 150);
+      iVer = Math.max(2, 300);
     for (let i = 0; i < iVer + 1; i++) {
       let fRad1 = i / iVer,
-        fZ = xInnerRad * (Math.cos(fRad1 * twopi) - 0.5),
+        // fZ = xInnerRad * (Math.cos(fRad1 * twopi) - 0.5),
+        fZ = 0,
         fRad2 = (i + 1) / iVer,
         fX1 = xInnerRad * Math.cos(fRad1 * twopi),
         fY1 = xInnerRad * Math.sin(fRad1 * twopi),
@@ -213,6 +238,7 @@ export class Planet extends Component<PlanetProps, PlanetState> {
         v2 = new THREE.Vector3(fX2, fZ, fY2),
         v3 = new THREE.Vector3(fX3, fZ, fY3),
         v4 = new THREE.Vector3(fX4, fZ, fY4);
+
       rings.vertices.push(v1);
       rings.vertices.push(v2);
       rings.vertices.push(v3);

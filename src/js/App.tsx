@@ -35,12 +35,12 @@ export class App extends Component<{}, AppState> {
   render() {
     return (
       <Planet
-        width={200}
-        height={200}
-        planetRadius={30}
-        orbitInnerRadius={40}
-        orbitOuterRadius={45}
-        orbitTilt={30}
+        width={800}
+        height={800}
+        planetRadius={100}
+        orbitInnerRadius={200}
+        orbitOuterRadius={220}
+        orbitTilt={20}
         planetColor={0x6e160f}
         orbitColor={0x00ff00}
       />
