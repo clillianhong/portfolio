@@ -1,7 +1,13 @@
 import "../css/App.css";
-import React, { Component, FunctionComponent } from "react";
-import * as THREE from "three";
+import React, { Component } from "react";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+
+import Projects from "./Projects";
+import LandingPage from "./LandingPage";
+import Thumbnail from "./Thumbnail";
+import Planet from "./Planet";
 import Tree from "./Tree";
+import Background from "./Background";
 
 type AppState = {
   appWidth: number;
@@ -28,13 +34,36 @@ export class App extends Component<{}, AppState> {
 
   render() {
     return (
-      <div className="App">
-        <Tree
-          width={this.state.appWidth}
-          height={this.state.appHeight}
-          treeID="firstTree"
-        />
-      </div>
+      <Planet
+        width={200}
+        height={200}
+        planetRadius={30}
+        orbitInnerRadius={40}
+        orbitOuterRadius={45}
+        orbitTilt={30}
+        planetColor={0x6e160f}
+        orbitColor={0x00ff00}
+      />
+
+      // <BrowserRouter>
+      //   <div className="App">
+      //     <Route exact path="/" component={LandingPage} />
+      //     <Route exact path="/projects" component={Projects} />
+      //     <div className="navigation">
+      //       {/* <img src={logo} className="logo-image" alt="Logo Image" /> */}
+      //       <div className="navigation-sub">
+      //         <Link to="/" className="item">
+      //           Main
+      //         </Link>
+      //         <Link to="/projects" className="item">
+      //           Projects
+      //         </Link>
+      //         {/* <Link to="/articles" className="item">Articles</Link> */}
+      //         {/* <Link to="/about" className="item">About</Link> */}
+      //       </div>
+      //     </div>
+      //   </div>
+      // </BrowserRouter>
     );
   }
 }

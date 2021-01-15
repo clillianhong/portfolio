@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import * as THREE from "three";
 import ThreeScene, { ThreeSceneState, ThreeSceneProps } from "./ThreeScene";
 import { LoadMesh } from "./Models";
+import "../css/App.css";
 
 export interface TreeState extends ThreeSceneState {
   treeID: string;
@@ -95,7 +96,7 @@ export class Tree extends Component<TreeProps, TreeState> {
       .then((scene) => {
         //set up camera and save state
         var camera = this.state.camera;
-        camera.position.z = 10;
+        camera.position.z = 12;
         this.setState({
           currentScene: scene,
           camera: camera,
@@ -139,7 +140,7 @@ export class Tree extends Component<TreeProps, TreeState> {
   };
 
   render() {
-    return <div className={this.state.treeID} ref={this.mount}></div>;
+    return <div className={"treeStyle"} ref={this.mount}></div>;
   }
 }
 
